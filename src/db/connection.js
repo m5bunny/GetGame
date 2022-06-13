@@ -15,4 +15,9 @@ pool.getConnection((error, connection) =>
   return connection.release();
 });
 
-module.exports = pool;
+pool.on('error', (error) =>
+{
+  console.log(error);
+});
+
+module.exports = pool

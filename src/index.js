@@ -9,13 +9,12 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
-app.use('/usersa', userRouter);
+app.use('/users', userRouter);
 
 app.post('/test', (req, res) =>
 {
 });
 
-app.use
 
 app.listen(port, () =>
 {
