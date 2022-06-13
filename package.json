@@ -4,8 +4,23 @@
   "description": "Programe project for Software Engineering, ZUT, 06.2022",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "dbr": "brew services start mariadb",
+    "dbs": "brew services stop mariadb"
   },
   "author": "mbunny",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "dotenv": "^16.0.1",
+    "nodemon": "^2.0.16"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "mariadb": "^3.0.0",
+    "multer": "^1.4.5-lts.1",
+    "validator": "^13.7.0"
+  }
 }
