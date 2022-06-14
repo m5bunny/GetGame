@@ -1,7 +1,6 @@
 const validator = require('validator');
 const pool = require('../db/connection');
-const e = require("express");
-const {response} = require("express");
+const jwt = require('jsonwebtoken')
 
 class User {
   constructor({ email = null, password = null, sys_czy_zablokowany = null, id = null, sys_id_moderatora = null}) {
@@ -67,7 +66,7 @@ class User {
       const users = await pool.query(SQLquery, values);
     for (let i = 0; i < users.length; ++i)
       users[i] = new User(users[i]);
-    console.log(users);
+
     return users;
   }
 
@@ -82,6 +81,29 @@ class User {
   {
     if (!validator.isEmail(this.email))
       throw new Error('The email is invalid')
+  }
+
+  async generateAuthToken()
+  {
+    const user = this;
+    const token = jwt.sign({ id: user.id } , process.env.SECRET_WORD);
+
+    const SQLquery = 'INSERT INTO Jwt ' +
+      '(token, id_user)' +
+      ' VALUES (?, ?)';
+    await pool.query(SQLquery,[token, user.id]);
+    return token;
+  }
+
+  async hasToken(token)
+  {
+    const SQLquery = 'SELECT token ' +
+      'FROM Jwt ' +
+      'WHERE token = ? AND id_user = ?';
+    token = await pool.query(SQLquery, [token, this.id]);
+    if (token.length === 0)
+      return false;
+    return true;
   }
 }
 module.exports = User;
