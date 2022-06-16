@@ -11,10 +11,6 @@ const app = express();
 app.use(express.json());
 app.use('/users', userRouter);
 
-app.post('/test', (req, res) =>
-{
-});
-
 
 app.listen(port, () =>
 {
