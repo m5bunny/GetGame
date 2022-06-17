@@ -7,7 +7,9 @@ const insertInto = async (insertObject, insertTable) =>
   let values = [];
   let i = 0;
   let SQLquery = 'INSERT INTO ' + insertTable;
-  for (const parameter in insertObject)
+  const parameters = Object.getOwnPropertyNames(insertObject).filter(item =>
+    typeof insertObject[item] !== 'function');
+  for (const parameter of parameters)
   {
     if (insertObject[parameter] !== null && parameter !== 'id')
     {
@@ -31,7 +33,9 @@ const updateIn= async (updateObject, updateCondition, updateTable) =>
   let i = 0;
   let SQLquery = 'UPDATE  ' + updateTable +
     'SET ';
-  for (const parameter in updateObject)
+  let parameters = Object.getOwnPropertyNames(updateObject).filter(item =>
+    typeof updateObject[item] !== 'function');
+  for (const parameter of parameters)
   {
     if (updateObject[parameter] !== null && parameter !== 'id') {
       SQLquery += parameter + ' = ?, '
@@ -40,7 +44,9 @@ const updateIn= async (updateObject, updateCondition, updateTable) =>
   }
   SQLquery = SQLquery.slice(0, -2);
   SQLquery += ' WHERE ';
-  for (const parameter in updateCondition)
+  parameters = Object.getOwnPropertyNames(updateCondition).filter(item =>
+    typeof updateCondition[item] !== 'function');
+  for (const parameter of parameters)
   {
     if (updateCondition[parameter] !== null) {
       SQLquery += parameter + ' = ? AND '
@@ -59,7 +65,9 @@ const deleteFrom = async (deleteCondition, deleteTable) =>
   let i = 0;
   let SQLquery = 'DELETE FROM ' + deleteTable +
     ' WHERE ';
-  for (const parameter in deleteCondition)
+  let parameters = Object.getOwnPropertyNames(deleteCondition).filter(item =>
+    typeof deleteCondition[item] !== 'function');
+  for (const parameter of parameters)
   {
     if (deleteCondition[parameter] !== null) {
       SQLquery += parameter + ' = ? AND '
@@ -76,12 +84,16 @@ const selectFrom = async (selectElements, selectCondition, selectTable) =>
   let i = 0;
   let SQLquery =
     'SELECT ';
-  for (const parameter in selectElements)
+  let parameters = Object.getOwnPropertyNames(selectElements).filter(item =>
+    typeof selectElements[item] !== 'function');
+  for (const parameter of parameters)
     SQLquery += parameter + ', ';
   SQLquery = SQLquery.slice(0, -2);
   SQLquery += ' FROM ' + selectTable +
     ' WHERE ';
-  for (const parameter in selectCondition)
+  parameters = Object.getOwnPropertyNames(selectCondition).filter(item =>
+    typeof selectCondition[item] !== 'function');
+  for (const parameter of parameters)
   {
     if (selectCondition[parameter] !== null) {
       SQLquery += parameter + ' = ? AND '

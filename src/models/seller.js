@@ -1,5 +1,6 @@
 const db = require("../utils/dbOperations");
 const validator = require("validator");
+const stdMethods = require("../utils/stdModelMethods");
 
 class Seller
 {
@@ -14,27 +15,18 @@ class Seller
     this.avatar_url = avatar_url;
   }
 
-  async save()
-  {
-    this.validate();
-    if (this.id === null)
-      await db.insertInto(this, 'Sprzedajacy');
-    else
-      await db.updateIn(this, { id: this.id }, 'Sprzedajacy');
-  }
+  static get dbTable() { return 'Sprzedajacy'; }
 
-  static async findBy(parameters)
-  {
-    const sellers = await db.selectFrom(new Seller(), parameters, 'Sprzedajacy');
-    for (let i = 0; i < sellers.length; ++i)
-      sellers[i] = new Seller(sellers[i]);
-    return sellers;
-  }
+  save = stdMethods.save;
 
-  static async findOneBy(parameters)
+  static findBy = stdMethods.findBy;
+
+  static findOneBy = stdMethods.findOneBy;
+
+  validate()
   {
-    const sellers = await Seller.findBy(parameters);
-    return sellers[0];
+    if (!validator.isIBAN(this.konto_bankowe))
+      throw new Error('The IBAN is invalid')
   }
 
   toJSON()
@@ -43,12 +35,6 @@ class Seller
     delete seller.user_id;
     delete seller.id;
     return seller;
-  }
-
-  validate()
-  {
-    if (!validator.isIBAN(this.konto_bankowe))
-      throw new Error('The IBAN is invalid')
   }
 }
 

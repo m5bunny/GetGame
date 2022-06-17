@@ -11,6 +11,12 @@ const app = express();
 app.use(express.json());
 app.use('/users', userRouter);
 
+const DicItem = require('./models/dicItem')
+
+app.get('/test', async (req, res) => {
+  const item = new DicItem();
+  res.send(item.test());
+});
 
 app.listen(port, () =>
 {

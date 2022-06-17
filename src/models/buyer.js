@@ -1,4 +1,6 @@
 const db = require("../utils/dbOperations");
+const stdMethods = require("../utils/stdModelMethods");
+const validator = require("validator");
 
 class Buyer
 {
@@ -13,26 +15,16 @@ class Buyer
     this.avatar_url = avatar_url;
   }
 
-  async save()
-  {
-    if (this.id === null)
-      await db.insertInto(this, 'Kupujacy');
-    else
-      await db.updateIn(this, { id: this.id }, 'Kupujacy');
-  }
+  static get dbTable() { return 'Kupujacy'; }
 
-  static async findBy(parameters)
-  {
-    const buyers = await db.selectFrom(new Buyer(), parameters, 'Kupujacy');
-    for (let i = 0; i < buyers.length; ++i)
-      buyers[i] = new Buyer(buyers[i]);
-    return buyers;
-  }
+  save = stdMethods.save;
 
-  static async findOneBy(parameters)
+  static findBy = stdMethods.findBy;
+
+  static findOneBy = stdMethods.findOneBy;
+
+  validate()
   {
-    const buyers = await Buyer.findBy(parameters);
-    return buyers[0];
   }
 
   toJSON()

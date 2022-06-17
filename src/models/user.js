@@ -1,9 +1,12 @@
 const validator = require('validator');
-const db = require('../utils/dbOperations')
-const jwt = require('jsonwebtoken')
+const stdMethods = require('../utils/stdModelMethods');
+const db = require('../utils/dbOperations');
+const jwt = require('jsonwebtoken');
 
 class User {
-  constructor({ email = null, password = null, sys_czy_zablokowany = null, id = null, sys_id_moderatora = null} = {}) {
+  constructor({  id = null, email = null, password = null,
+                sys_czy_zablokowany = null, sys_id_moderatora = null} = {})
+  {
     this.id = id;
     this.sys_czy_zablokowany = sys_czy_zablokowany;
     this.sys_id_moderatora = sys_id_moderatora;
@@ -11,27 +14,20 @@ class User {
     this.password = password;
   }
 
-  async save()
-  {
-    this.validate();
-    if (this.id === null)
-      await db.insertInto(this, 'User');
-    else
-      await db.updateIn(this, { id: this.id }, 'User');
-  }
+  static get dbTable() { return 'User'; }
 
-  static async findBy(parameters)
-  {
-    const users = await db.selectFrom(new User(), parameters, 'User');
-    for (let i = 0; i < users.length; ++i)
-      users[i] = new User(users[i]);
-    return users;
-  }
+  save = stdMethods.save;
 
-  static async findOneBy(parameters)
+  delete = stdMethods.del;
+
+  static findBy = stdMethods.findBy;
+
+  static findOneBy = stdMethods.findOneBy;
+
+  validate()
   {
-    const users = await User.findBy(parameters);
-    return users[0];
+    if (!validator.isEmail(this.email))
+      throw new Error('The email is invalid')
   }
 
   toJSON()
@@ -39,12 +35,6 @@ class User {
     const user = new User(this);
     delete user.password;
     return user;
-  }
-
-  validate()
-  {
-    if (!validator.isEmail(this.email))
-      throw new Error('The email is invalid')
   }
 
   async generateAuthToken()
@@ -60,11 +50,6 @@ class User {
     const tokens = await db.selectFrom({ token },
       { token, id_user: this.id}, 'Jwt');
     return tokens.length !== 0;
-  }
-
-  async delete()
-  {
-    await db.deleteFrom({ id: this.id }, 'User');
   }
 
   async deleteToken(token)
