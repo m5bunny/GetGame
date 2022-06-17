@@ -28,6 +28,12 @@ class User {
     return users;
   }
 
+  static async findOneBy(parameters)
+  {
+    const users = await User.findBy(parameters);
+    return users[0];
+  }
+
   toJSON()
   {
     const user = new User(this);
@@ -59,6 +65,16 @@ class User {
   async delete()
   {
     await db.deleteFrom({ id: this.id }, 'User');
+  }
+
+  async deleteToken(token)
+  {
+    await db.deleteFrom({ id_user: this.id, token }, 'Jwt');
+  }
+
+  async deleteAllTokens()
+  {
+    await db.deleteFrom({ id_user: this.id }, 'Jwt');
   }
 }
 module.exports = User;

@@ -31,6 +31,12 @@ class Seller
     return sellers;
   }
 
+  static async findOneBy(parameters)
+  {
+    const sellers = await Seller.findBy(parameters);
+    return sellers[0];
+  }
+
   toJSON()
   {
     const seller = new Seller(this);

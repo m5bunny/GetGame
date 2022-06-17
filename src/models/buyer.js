@@ -29,6 +29,12 @@ class Buyer
     return buyers;
   }
 
+  static async findOneBy(parameters)
+  {
+    const buyers = await Buyer.findBy(parameters);
+    return buyers[0];
+  }
+
   toJSON()
   {
     const buyer = new Buyer(this);
