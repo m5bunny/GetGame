@@ -6,7 +6,7 @@ async function save()
   if (this.id === null)
     await db.insertInto(this, this.constructor.dbTable);
   else
-    await db.updateIn(this, { id: this.id }, this.constructor.dbTable);
+    await db.updateIn(this, {id: this.id}, this.constructor.dbTable);
 }
 
 async function findBy(parameters)

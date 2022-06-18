@@ -28,7 +28,7 @@ router.post('/', async (req, res) =>
   }
   catch (error)
   {
-    if (user !== undefined)
+    if (user.id !== null)
       await user.delete();
     console.log(error);
     res.status(404).send({ errno: error.errno, message: error.message });

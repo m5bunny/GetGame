@@ -5,7 +5,8 @@ const validator = require("validator");
 class Game
 {
   constructor({ id = null, nazwa = null, opis = null, cena = null, id_sprzedajacy = null,
-              sys_czy_ukryta = null, sys_id_moderatora = null, data_release = null, link_trailer = null} = {}) {
+              sys_czy_ukryta = null, sys_id_moderatora = null, data_release = null,
+                link_trailer = null } = {}) {
     this.id = id;
     this.nazwa = nazwa;
     this.opis = opis;
@@ -29,6 +30,12 @@ class Game
 
   validate()
   {
+  }
+
+  async addImages(imageLinks)
+  {
+    for (const link of imageLinks)
+      await db.insertInto({ link, id_gry: this.id }, 'Obraz');
   }
 }
 

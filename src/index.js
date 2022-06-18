@@ -2,7 +2,8 @@ const dotenv = require("dotenv");
 dotenv.config({path: '.env-local'});
 
 const express = require('express');
-const userRouter = require('./routers/user')
+const userRouter = require('./routers/user');
+const gameRouter = require('./routers/game');
 
 const port = process.env.PORT || 3000;
 
@@ -10,6 +11,7 @@ const app = express();
 
 app.use(express.json());
 app.use('/users', userRouter);
+app.use('/games', gameRouter);
 
 const DicItem = require('./models/dicItem')
 

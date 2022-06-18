@@ -1,15 +1,14 @@
 const stdMethods = require("../utils/stdModelMethods");
 
-class DicItem
+class Dictionary
 {
-  constructor({ id = null, status = null, typ_id = null } = {})
+  constructor({ id = null, typ = null } = {})
   {
     this.id = id;
-    this.status = status;
-    this.typ_id = typ_id;
+    this.typ = typ;
   }
 
-  static get dbTable() { return 'DicItem'; }
+  static get dbTable() { return 'Dictionary'; }
 
   save = stdMethods.save;
 
@@ -24,4 +23,4 @@ class DicItem
   }
 }
 
-module.exports = DicItem;
+module.exports = Dictionary;
