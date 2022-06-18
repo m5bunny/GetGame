@@ -8,7 +8,7 @@ class Game
 {
   constructor({ id = null, nazwa = null, opis = null, cena = null, id_sprzedajacy = null,
               sys_czy_ukryta = null, sys_id_moderatora = null, data_release = null,
-                link_trailer = null } = {}) {
+                link_trailer = null, ocena = null, ilosc_komentarzy = null } = {}) {
     this.id = id;
     this.nazwa = nazwa;
     this.opis = opis;
@@ -18,6 +18,8 @@ class Game
     this.sys_id_moderatora = sys_id_moderatora;
     this.data_release = data_release;
     this.link_trailer = link_trailer;
+    this.ocena = ocena;
+    this.ilosc_komentarzy = ilosc_komentarzy;
   }
 
   static get dbTable() { return 'Gra'; }

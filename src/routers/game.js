@@ -32,4 +32,53 @@ router.post('/', [auth, permission.seller], async (req, res) =>
   }
 });
 
+router.post('/addToCart/:id', [auth, permission.buyer], async (req, res) =>
+{
+  try
+  {
+    const game = await Game.findOneBy({ id: req.params.id });
+    if (!game)
+      throw Error(`There is no game with id ${ req.params.id }`);
+    const cart = await req.buyer.getCart();
+    const games = cart.filter(g => g.id_gry === game.id);
+    if (games[0])
+      throw Error(`The game with id ${ req.params.id } is already in the cart`);
+    await req.buyer.addGameToCart(game.id);
+    res.send(await req.buyer.getCart());
+  }
+  catch (error)
+  {
+    res.status(404).send(error.message);
+  }
+});
+
+router.post('/removeFromCart/:id', [auth, permission.buyer], async (req, res) =>
+{
+  try
+  {
+    let cart = await req.buyer.getCart();
+    const games = cart.filter(game => game.id_gry === parseInt(req.params.id));
+    if (!games[0])
+      throw Error(`There is no game with id ${ req.params.id } in the cart`);
+    await req.buyer.removeGameFromCart(games[0].id_gry);
+    res.send(await req.buyer.getCart());
+  }
+  catch (error)
+  {
+    res.status(404).send(error.message);
+  }
+});
+
+router.get('/getCart', [auth, permission.buyer], async (req, res) =>
+{
+  try
+  {
+    res.send(await req.buyer.getCart());
+  }
+  catch (error)
+  {
+    res.status(500).send();
+  }
+});
+
 module.exports = router;

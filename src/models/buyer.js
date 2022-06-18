@@ -34,6 +34,22 @@ class Buyer
     delete buyer.id;
     return buyer;
   }
+
+  async addGameToCart(gameId)
+  {
+    await db.insertInto({ id_gry: gameId, id_kupujacego: this.id }, 'Koszyk');
+  }
+
+  async removeGameFromCart(gameId)
+  {
+    await db.deleteFrom({ id_gry: gameId, id_kupujacego: this.id }, 'Koszyk');
+  }
+
+  async getCart()
+  {
+    return await db.selectFrom({ id_gry: null },
+      { id_kupujacego: this.id }, 'Koszyk');
+  }
 }
 
 module.exports = Buyer;

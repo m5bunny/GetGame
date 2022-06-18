@@ -13,13 +13,6 @@ app.use(express.json());
 app.use('/users', userRouter);
 app.use('/games', gameRouter);
 
-const DicItem = require('./models/dicItem')
-
-app.get('/test', async (req, res) => {
-  const item = new DicItem();
-  res.send(item.test());
-});
-
 app.listen(port, () =>
 {
   console.log(`The server is up on ${port}`);
