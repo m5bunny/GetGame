@@ -1,5 +1,37 @@
 const pool = require('../db/connection')
 
+const whereConstructor = (condition) =>
+{
+  let values = [];
+  let i = 0;
+  let SQLquery = ' WHERE ';
+  const parameters = Object.getOwnPropertyNames(condition).filter(item =>
+    typeof condition[item] !== 'function');
+  let parameter;
+  for (parameter of parameters)
+  {
+    if (condition[parameter] !== null) {
+      if (Array.isArray(condition[parameter]))
+      {
+        for (const value of condition[parameter])
+        {
+          SQLquery += parameter + ' = ? OR ';
+          values[i++] = value;
+        }
+        SQLquery = SQLquery.slice(0, -3);
+      }
+      else
+      {
+        SQLquery += parameter + ' = ? AND ';
+        values[i++] = condition[parameter];
+      }
+    }
+  }
+  if (!Array.isArray(condition[parameter]))
+    SQLquery = SQLquery.slice(0, -5);
+  return { where: SQLquery, whereValues: values, where_i: i };
+}
+
 const insertInto = async (insertObject, insertTable) =>
 {
   let parametersString = '';
@@ -43,17 +75,10 @@ const updateIn= async (updateObject, updateCondition, updateTable) =>
     }
   }
   SQLquery = SQLquery.slice(0, -2);
-  SQLquery += ' WHERE ';
-  parameters = Object.getOwnPropertyNames(updateCondition).filter(item =>
-    typeof updateCondition[item] !== 'function');
-  for (const parameter of parameters)
-  {
-    if (updateCondition[parameter] !== null) {
-      SQLquery += parameter + ' = ? AND '
-      values[i++] = updateCondition[parameter];
-    }
-  }
-  SQLquery = SQLquery.slice(0, -5);
+  const { where, whereValues, where_i } = whereConstructor(updateCondition, values, i);
+  SQLquery += where;
+  values = values.concat(whereValues);
+  i += where_i;
   await pool.query(SQLquery, values);
 }
 
@@ -63,18 +88,11 @@ const deleteFrom = async (deleteCondition, deleteTable) =>
   let questionMarks = '';
   let values = [];
   let i = 0;
-  let SQLquery = 'DELETE FROM ' + deleteTable +
-    ' WHERE ';
-  let parameters = Object.getOwnPropertyNames(deleteCondition).filter(item =>
-    typeof deleteCondition[item] !== 'function');
-  for (const parameter of parameters)
-  {
-    if (deleteCondition[parameter] !== null) {
-      SQLquery += parameter + ' = ? AND '
-      values[i++] = deleteCondition[parameter];
-    }
-  }
-  SQLquery = SQLquery.slice(0, -5);
+  let SQLquery = 'DELETE FROM ' + deleteTable;
+  const { where, whereValues, where_i } = whereConstructor(deleteCondition, values, i);
+  SQLquery += where;
+  values = values.concat(whereValues);
+  i += where_i;
   await pool.query(SQLquery, values);
 }
 
@@ -89,18 +107,11 @@ const selectFrom = async (selectElements, selectCondition, selectTable) =>
   for (const parameter of parameters)
     SQLquery += parameter + ', ';
   SQLquery = SQLquery.slice(0, -2);
-  SQLquery += ' FROM ' + selectTable +
-    ' WHERE ';
-  parameters = Object.getOwnPropertyNames(selectCondition).filter(item =>
-    typeof selectCondition[item] !== 'function');
-  for (const parameter of parameters)
-  {
-    if (selectCondition[parameter] !== null) {
-      SQLquery += parameter + ' = ? AND '
-      values[i++] = selectCondition[parameter];
-    }
-  }
-  SQLquery = SQLquery.slice(0, -5);
+  SQLquery += ' FROM ' + selectTable;
+  const { where, whereValues, where_i } = whereConstructor(selectCondition, values, i);
+  SQLquery += where;
+  values = values.concat(whereValues);
+  i += where_i;
   return await pool.query(SQLquery, values);
 }
 
