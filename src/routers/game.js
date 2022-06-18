@@ -20,12 +20,14 @@ router.post('/', [auth, permission.seller], async (req, res) =>
     const patch = new Patch({ ...req.body.patch, id_gry: game.id });
     await patch.save();
     await game.addImages(req.body.images);
+    await game.addTags(req.body.tags);
     res.status(201).send(game);
   }
   catch (error)
   {
     if (game.id !== null)
       await game.delete();
+    console.log(error);
     res.status(404).send({ errno: error.errno, message: error.message });
   }
 });

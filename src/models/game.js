@@ -1,6 +1,8 @@
 const db = require("../utils/dbOperations");
 const stdMethods = require("../utils/stdModelMethods");
 const validator = require("validator");
+const DicItem = require("./dicItem");
+const Dictionary = require('./dictionary');
 
 class Game
 {
@@ -36,6 +38,24 @@ class Game
   {
     for (const link of imageLinks)
       await db.insertInto({ link, id_gry: this.id }, 'Obraz');
+  }
+
+  async addTags(tagTitles)
+  {
+    const TagGroup = await Dictionary.findOneBy({ typ: this.constructor.dbTable });
+    let existingTagTitles = await DicItem.findBy({ typ_id: TagGroup.id, status: tagTitles });
+    existingTagTitles.forEach((el, i) => existingTagTitles[i] = el.status);
+    const nonExistingTagTitles = tagTitles.filter(title => !existingTagTitles.includes(title));
+    for (const title of nonExistingTagTitles)
+    {
+      const tag = new DicItem({ status: title, typ_id: TagGroup.id });
+      await tag.save();
+    }
+    const existingTags = await DicItem.findBy({ typ_id: TagGroup.id, status: tagTitles });
+    for (const tag of existingTags)
+    {
+      await db.insertInto({ id_tag: tag.id, id_gra: this.id }, 'Tag_Gra');
+    }
   }
 }
 
