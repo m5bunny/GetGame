@@ -1,9 +1,11 @@
 const express = require('express');
 const Game = require('../models/game');
 const DicItem = require('../models/dicItem');
+const Discount = require('../models/discount');
 const Patch = require('../models/patch');
 const auth = require('../middleware/auth');
 const permission = require('../middleware/permission');
+const checkDiscountCode = require('../middleware/checkDiscountCode');
 const router = new express.Router();
 
 router.post('/', [auth, permission.seller], async (req, res) =>
@@ -32,18 +34,22 @@ router.post('/', [auth, permission.seller], async (req, res) =>
   }
 });
 
-router.post('/addToCart/:id', [auth, permission.buyer], async (req, res) =>
+router.post('/addToCart/:id', [auth, permission.buyer, checkDiscountCode], async (req, res) =>
 {
   try
   {
     const game = await Game.findOneBy({ id: req.params.id });
     if (!game)
       throw Error(`There is no game with id ${ req.params.id }`);
+    const rabat = await Discount.findOneBy({})
     const cart = await req.buyer.getCart();
     const games = cart.filter(g => g.id_gry === game.id);
     if (games[0])
       throw Error(`The game with id ${ req.params.id } is already in the cart`);
-    await req.buyer.addGameToCart(game.id);
+    let price = game.cena;
+    if (req.discount)
+      price = req.discount.getNewPrice(game.cena);
+    await req.buyer.addGameToCart(game.id, price, req.discount.id);
     res.send(await req.buyer.getCart());
   }
   catch (error)

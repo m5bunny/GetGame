@@ -1,6 +1,5 @@
 const db = require("../utils/dbOperations");
 const stdMethods = require("../utils/stdModelMethods");
-const validator = require("validator");
 const DicItem = require("./dicItem");
 const Dictionary = require('./dictionary');
 
