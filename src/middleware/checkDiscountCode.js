@@ -1,11 +1,15 @@
 const Discount = require("../models/discount");
+const Dictionary = require('../models/dictionary');
+const DicItem = require('../models/dicItem');
 
 const checkDiscountCode = async (req, res, next) =>
 {
   try {
     const discountId = req.query.discount;
     if (discountId) {
-      const discount = await Discount.findOneBy({id: discountId});
+      const statusDic = await Dictionary.findOneBy({ typ: Discount.dbTable });
+      const activeStatus = await DicItem.findOneBy({ typ_id: statusDic.id, status: 'Aktywny' });
+      const discount = await Discount.findOneBy({id: discountId, status_id: activeStatus.id });
       if (!discount)
         throw new Error("There is no such discount code!");
       const rightDiscountCode = await discount.checkGame(req.params.id);

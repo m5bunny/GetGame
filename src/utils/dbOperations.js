@@ -64,7 +64,7 @@ const updateIn= async (updateObject, updateCondition, updateTable) =>
   let values = [];
   let i = 0;
   let SQLquery = 'UPDATE  ' + updateTable +
-    'SET ';
+    ' SET ';
   let parameters = Object.getOwnPropertyNames(updateObject).filter(item =>
     typeof updateObject[item] !== 'function');
   for (const parameter of parameters)

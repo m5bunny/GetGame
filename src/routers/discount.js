@@ -20,7 +20,8 @@ router.post('/', [auth, permission.seller], async (req, res) =>
       throw new Error("One or more games are not exist");
     const statusDic = await Dictionary.findOneBy({ typ: Discount.dbTable });
     let status;
-    if (req.body.discount.data_startu >= new Date())
+    req.body.discount.data_startu = new Date(req.body.discount.data_startu);
+    if (req.body.discount.data_startu <= new Date())
       status = await DicItem.findOneBy({ typ_id: statusDic.id, status: 'Aktywny' });
     else
       status = await DicItem.findOneBy({ typ_id: statusDic.id, status: 'Nieaktywny' });
@@ -29,7 +30,7 @@ router.post('/', [auth, permission.seller], async (req, res) =>
       ...req.body.discount, id_sprzedajacego: req.seller.id, status_id: status.id, data_tworzenia: creationDate
     });
     await discount.save();
-    discount = await Discount.findOneBy( { id_sprzedajacego: req.seller.id,
+    discount = await Discount.getOneBy( { id_sprzedajacego: req.seller.id,
       data_tworzenia: creationDate });
     for (const game of games)
       await db.insertInto({ id_gra: game.id, id_rabat: discount.id }, 'Gra_Rabat');

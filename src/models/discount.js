@@ -92,6 +92,7 @@ class Discount {
 
   async use(buyerId)
   {
+    await this.checkIsActive();
     const statusDictionary = await Dictionary.findOneBy({ typ: this.constructor.dbTable });
     const activeStatus = await DicItem.findOneBy({ typ_id: statusDictionary.id, status: 'Aktywny' });
     if (this.status_id === activeStatus.id)
@@ -99,7 +100,7 @@ class Discount {
       const buyer = await Buyer.findOneBy({id: buyerId});
       if (!buyer)
         throw new Error(`There is no buyer with id ${buyerId}`);
-      db.insertInto({id_kupujacy: buyerId, id_rabat: this.id}, 'Rabat_Kupujacy');
+      await db.insertInto({id_kupujacy: buyerId, id_rabat: this.id}, 'Rabat_Kupujacy');
       this.liczba_aktywowan++;
       if (this.limit_aktywowan && this.liczba_aktywowan === this.limit_aktywowan)
       {

@@ -2,7 +2,8 @@ const db = require('./dbOperations');
 
 async function save()
 {
-  this.validate();
+  if (this.validate)
+    this.validate();
   if (this.id === null)
     await db.insertInto(this, this.constructor.dbTable);
   else

@@ -47,13 +47,18 @@ router.post('/addToCart/:id', [auth, permission.buyer, checkDiscountCode], async
     if (games[0])
       throw Error(`The game with id ${ req.params.id } is already in the cart`);
     let price = game.cena;
+    let discountId = null;
     if (req.discount)
+    {
       price = req.discount.getNewPrice(game.cena);
-    await req.buyer.addGameToCart(game.id, price, req.discount.id);
+      discountId = req.discount.id
+    }
+    await req.buyer.addGameToCart(game.id, price, discountId);
     res.send(await req.buyer.getCart());
   }
   catch (error)
   {
+    console.log(error);
     res.status(404).send(error.message);
   }
 });

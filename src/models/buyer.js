@@ -38,7 +38,7 @@ class Buyer
   async addGameToCart(gameId, price, rabatId = null)
   {
     await db.insertInto({ id_gry: gameId, id_kupujacego: this.id,
-        cena: price, kod_rabatowy_id: rabatId },
+        cena: price, rabat_id: rabatId },
       'Koszyk');
   }
 
@@ -49,8 +49,13 @@ class Buyer
 
   async getCart()
   {
-    return await db.selectFrom({ id_gry: null, cena: null, kod_rabatowy_id: null },
+    return await db.selectFrom({ id_gry: null, cena: null, rabat_id: null },
       { id_kupujacego: this.id }, 'Koszyk');
+  }
+
+  async clearCart()
+  {
+    await db.deleteFrom({ id_kupujacego: this.id }, 'Koszyk');
   }
 }
 
